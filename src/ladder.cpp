@@ -8,6 +8,8 @@
 #include <fstream>
 using namespace std;
 
+typedef unsigned long long ull;
+
 
 
 void error(string word1, string word2, string msg)
@@ -16,7 +18,7 @@ void error(string word1, string word2, string msg)
 }
 bool edit_distance_within(const std::string& str1, const std::string& str2, int d)
 {
-    int l1 = str1.length(), l2 = str2.length();
+    /*int l1 = str1.length(), l2 = str2.length();
     if (abs(l1 - l2) > d){return false;}
 
     int i = 0; 
@@ -35,7 +37,35 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
         }
     } 
     count += (l1 - i) + (l2 - j);
-    return count <= d;
+    return count <= d;*/
+    //trying myers implementation of edit_distance
+    int m = str1.size();
+    int n = str2.size();
+    if (m > n){return edit_distance_within(str2 , str1, d);}
+    if (n - m > d) {return false;}
+    const int W = 64;
+    vector<ull> Peq(128,0);
+
+    for (int i = 0; i < m; ++i)
+        Peq[str1[i]] |= (1ULL << i);
+    ull VP = ~0ULL, VN = 0, curr_mask;
+    int dist = n;
+    for (int j = 0; j < n; ++j){
+        curr_mask = Peq[str2[j]];
+        ull x = curr_mask | VN;
+        ull D0 = ((VP + (x & VP)) ^ VP) | x;
+        ull HP = VP & D0;
+        ull HN = VN | ~(VP | D0);
+
+        VP = (HP << 1) | ~(D0 | (HN << 1));
+        VN = (HN << 1) & D0;
+        
+        if (D0 & (1ULL << (m-1))){dist++;}
+        if (HP & (1ULL << (m-1))){dist--;}
+
+        if (dist > d){return false;}
+    }
+    return dist <= d;
 }
 //examines the ladders that are one step away from the orginal word, where only one letter is changed
 bool is_adjacent(const string& word1, const string& word2)
@@ -44,7 +74,7 @@ bool is_adjacent(const string& word1, const string& word2)
 }
 // uses bfs
 //creates a queue of stacks
-/*vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
+vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
 {
     if(begin_word == end_word){return{begin_word};}
     //if (word_list.find(begin_word) == word_list.end()){return{};}
@@ -78,7 +108,7 @@ bool is_adjacent(const string& word1, const string& word2)
     }
     return {};
 }
-*/
+
 void load_words(set<string> & word_list, const string& file_name)
 {
     ifstream file(file_name);
@@ -110,7 +140,8 @@ void verify_word_ladder()
     print_word_ladder(ladder);
 }
 
-vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
+
+/*vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
 {
     vector<string> words(word_list.begin(), word_list.end());
     int n = words.size();
@@ -182,4 +213,4 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
         shortest_ladder.push_back(words[paths[0][i]]);
     }
     return shortest_ladder;
-}
+}*/
