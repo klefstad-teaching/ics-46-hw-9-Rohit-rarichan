@@ -103,9 +103,8 @@ void verify_word_ladder()
 {
     set<string> word_list;
     load_words(word_list, "words.txt");
-    string start, end;
-    cin >> start;
-    cin >> end;
+    string start = "hit";
+    string end = "halt";
     vector<string> ladder = generate_word_ladder(start, end, word_list);
     print_word_ladder(ladder);
 }
