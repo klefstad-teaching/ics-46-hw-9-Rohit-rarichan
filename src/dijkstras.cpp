@@ -58,7 +58,7 @@ void print_path(const vector<int>& v, int total)
         cout << "No path found." << endl;
         return;
     }
-    cout << "Shortest path: ";
+    //cout << "Shortest path: ";
     for (size_t i = 0; i < v.size(); ++i){
         cout << v[i] << " ";
     }
