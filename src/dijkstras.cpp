@@ -60,7 +60,7 @@ void print_path(const vector<int>& v, int total)
     }
     cout << "Shortest path: ";
     for (size_t i = 0; i < v.size(); ++i){
-        cout << v[i] << " -> ";
+        cout << v[i] << " ";
     }
-    cout << "\nTotal cost: " << total << endl;
+    cout << "\nTotal cost is " << total << endl;
 }
