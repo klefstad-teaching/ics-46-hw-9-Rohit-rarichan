@@ -139,7 +139,7 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
         }
     }
 
-    vector<int> parent[n];
+    vector<vector<int>> parent(n);
     queue<int> q;
     vector<int> dist(n, 1005);
     q.push(start);
