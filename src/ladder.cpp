@@ -44,10 +44,10 @@ bool is_adjacent(const string& word1, const string& word2)
 }
 // uses bfs
 //creates a queue of stacks
-vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
+/*vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
 {
     if(begin_word == end_word){return{begin_word};}
-    if (word_list.find(begin_word) == word_list.end()){return{};}
+    //if (word_list.find(begin_word) == word_list.end()){return{};}
 
     queue<vector<string>> ladders;
     ladders.push({begin_word});
@@ -78,7 +78,7 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
     }
     return {};
 }
-
+*/
 void load_words(set<string> & word_list, const string& file_name)
 {
     ifstream file(file_name);
@@ -89,6 +89,7 @@ void load_words(set<string> & word_list, const string& file_name)
     string word;
     while(file >> word){
         word_list.insert(word);
+        //cout << word << " Inserted ";
     }
     file.close();
 }
@@ -107,4 +108,78 @@ void verify_word_ladder()
     string end = "halt";
     vector<string> ladder = generate_word_ladder(start, end, word_list);
     print_word_ladder(ladder);
+}
+
+vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
+{
+    vector<string> words(word_list.begin(), word_list.end());
+    int n = words.size();
+    int start = -1;
+    int end = -1;
+
+    for (int i = 0; i < n; ++i){
+        if (words[i] == begin_word){start = i;}
+        if (words[i] == end_word){end = i;}
+    }
+
+    if (end == -1){return {};}
+    if (start == -1){
+        words.insert(words.begin(), begin_word);
+        start = 0; 
+        ++end;
+        ++n;
+    }
+    vector<vector<int>> adj(n);
+    for (int i = 0; i < n - 1; ++i){
+        for (int j = i + 1; j < n; j++){
+            if(is_adjacent(words[i], words[j])){
+                adj[i].push_back(j);
+                adj[i].push_back(i);
+            }
+        }
+    }
+
+    vector<int> parent[n];
+    queue<int> q;
+    vector<int> dist(n, 1005);
+    q.push(start);
+    parent[start].push_back(-1);
+    dist[start] = 0;
+
+    while (!q.empty()){
+        int x = q.front();
+        q.pop();
+        for (int u : adj[x]){
+            if (dist[u] > dist[x] + 1){
+                dist[u] =  dist[x] + 1;
+                q.push(u);
+                parent[u].clear();
+                parent[u].push_back(x);
+            }else if (dist[u] == dist[x] + 1){
+                parent[u].push_back(x);
+            }
+        }
+    }
+    vector<vector<int>> paths;
+    vector<int> path;
+    function<void(int)> shortestPaths = [&](int node){
+        if (node == -1){
+            paths.push_back(path);
+            return;
+        }
+        for (int u : parent[node]){
+            path.push_back(u);
+            shortestPaths(u);
+            path.pop_back();
+        }
+    };
+
+    shortestPaths(end);
+    if (paths.empty()){return {};}
+
+    vector<string> shortest_ladder;
+    for(int i = paths[0].size() - 1; i >= 0; --i){
+        shortest_ladder.push_back(words[paths[0][i]]);
+    }
+    return shortest_ladder;
 }

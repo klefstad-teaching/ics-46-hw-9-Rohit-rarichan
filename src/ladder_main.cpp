@@ -2,9 +2,16 @@
 //check if the start and end words are the same to avoid infinite loop
 //use the implementation in ladder.cpp to find the shortest path using bfs
 #include "ladder.h"
+#include <set>
+#include <string>
+#include <iostream>
+#include <fstream>
 
 
 int main()
 {
-    verify_word_ladder();
+    //verify_word_ladder();
+    set<string> word_list;
+    load_words(word_list, "words.txt");
+    return 0;
 }
