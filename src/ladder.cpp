@@ -91,6 +91,7 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
     while (!ladders.empty()){
         int size = ladders.size();
         unordered_set<string> level_visited;
+        vector<string> next_words;
 
         for (int i = 0; i < size; ++i){
             vector<string> ladder = ladders.front();
@@ -99,20 +100,26 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
 
             if(last_word == end_word){return ladder;}
 
-            for (auto it = dict.begin(); it != dict.end();) {
+for (auto it = dict.begin(); it != dict.end();) {
                 if (visited.find(*it) == visited.end() && is_adjacent(last_word, *it)) {
-                    vector<string> new_ladder = ladder;
-                    new_ladder.push_back(*it);
-
-                    if (*it == end_word) return new_ladder;
-
-                    ladders.push(new_ladder);
-                    level_visited.insert(*it);
+                    next_words.push_back(*it);
                     it = dict.erase(it);  
                 } else {
                     ++it;
                 }
             }
+            sort(next_words.begin(), next_words.end());
+
+            for (const string& word : next_words) {
+                vector<string> new_ladder = ladder;
+                new_ladder.push_back(word);
+
+                if (word == end_word) return new_ladder;
+
+                ladders.push(new_ladder);
+                level_visited.insert(word);
+            }
+            next_words.clear();
         }
         visited.insert(level_visited.begin(), level_visited.end());
     }
