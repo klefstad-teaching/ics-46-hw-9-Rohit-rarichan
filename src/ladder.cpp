@@ -18,7 +18,7 @@ void error(string word1, string word2, string msg)
 }
 bool edit_distance_within(const std::string& str1, const std::string& str2, int d)
 {
-    /*int l1 = str1.length(), l2 = str2.length();
+    int l1 = str1.length(), l2 = str2.length();
     if (abs(l1 - l2) > d){return false;}
 
     int i = 0; 
@@ -37,36 +37,44 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
         }
     } 
     count += (l1 - i) + (l2 - j);
-    return count <= d;*/
-    //trying myers implementation of edit_distance
-    int m = str1.size();
-    int n = str2.size();
-    if (m > n){return edit_distance_within(str2 , str1, d);}
-    if (n - m > d) {return false;}
-    const int W = 64;
-    vector<ull> Peq(128,0);
+    return count <= d;
+    //trying ukonen implementation of edit_distance
+    /*int m = str1.size(), n = str2.size();
 
-    for (int i = 0; i < m; ++i)
-        Peq[str1[i]] |= (1ULL << i);
-    ull VP = ~0ULL, VN = 0, curr_mask;
-    int dist = n;
-    for (int j = 0; j < n; ++j){
-        curr_mask = Peq[str2[j]];
-        ull x = curr_mask | VN;
-        ull D0 = ((VP + (x & VP)) ^ VP) | x;
-        ull HP = VP & D0;
-        ull HN = VN | ~(VP | D0);
+    if (m > n) return edit_distance_within(str2, str1, d);  // Ensure str1 is the shorter string
 
-        VP = (HP << 1) | ~(D0 | (HN << 1));
-        VN = (HN << 1) & D0;
-        
-        if (D0 & (1ULL << (m-1))){dist++;}
-        if (HP & (1ULL << (m-1))){dist--;}
+    if (n - m > d) return false;  // If length difference exceeds d, edit distance is definitely > d
 
-        if (dist > d){return false;}
+    vector<int> prev(d * 2 + 1, 0);
+    vector<int> curr(d * 2 + 1, 0);
+
+    for (int k = -d; k <= d; ++k) {
+        prev[k + d] = (k < 0) ? -k : 0;
     }
-    return dist <= d;
+
+    for (int i = 1; i <= m; ++i) {
+        for (int k = -d; k <= d; ++k) {
+            int idx = k + d;
+            int best = prev[idx] + 1;  // Deletion
+
+            if (k > -d) best = min(best, prev[idx - 1] + 1);  // Insertion
+            if (k < d) best = min(best, prev[idx + 1]);  // Match/Mismatch
+
+            while (best < n && i + best - k < m && str1[i + best - k - 1] == str2[best]) {
+                ++best;  // Extend matches
+            }
+
+            curr[idx] = best;
+        }
+
+        if (curr[d] >= n) return true;  // If we reach the end of str2, we are within distance d
+
+        swap(prev, curr);  // Move to the next row
+    }
+
+    return false;*/
 }
+
 //examines the ladders that are one step away from the orginal word, where only one letter is changed
 bool is_adjacent(const string& word1, const string& word2)
 {
@@ -81,13 +89,14 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
     //if (word_list.find(begin_word) == word_list.end()){return{};}
 
     queue<vector<string>> ladders;
+    unordered_set<string> visited;
+
     ladders.push({begin_word});
-    set<string> visited;
     visited.insert(begin_word);
 
     while (!ladders.empty()){
         int size = ladders.size();
-        //set<string> level_visited;
+        unordered_set<string> level_visited;
 
         for (int i = 0; i < size; ++i){
             vector<string> ladder = ladders.front();
@@ -100,12 +109,15 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
                 if (visited.find(word) == visited.end() && is_adjacent(last_word, word)){
                     vector<string> new_ladder = ladder;
                     new_ladder.push_back(word);
+
+                    if (word == end_word){return new_ladder;}
+
                     ladders.push(new_ladder);
-                    visited.insert(word);
+                    level_visited.insert(word);
                 }
             }
         }
-        //visited.insert(level_visited.begin(), level_visited.end());
+        visited.insert(level_visited.begin(), level_visited.end());
     }
     return {};
 }
