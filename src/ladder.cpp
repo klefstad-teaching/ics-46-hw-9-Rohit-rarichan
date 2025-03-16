@@ -8,9 +8,6 @@
 #include <fstream>
 using namespace std;
 
-typedef uint64_t ull;
-
-
 
 void error(string word1, string word2, string msg)
 {
@@ -38,48 +35,13 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
     } 
     count += (l1 - i) + (l2 - j);
     return count <= d;
-    //trying ukonen implementation of edit_distance
-    /*int m = str1.size(), n = str2.size();
-
-    if (m > n) return edit_distance_within(str2, str1, d);  // Ensure str1 is the shorter string
-
-    if (n - m > d) return false;  // If length difference exceeds d, edit distance is definitely > d
-
-    vector<int> prev(d * 2 + 1, 0);
-    vector<int> curr(d * 2 + 1, 0);
-
-    for (int k = -d; k <= d; ++k) {
-        prev[k + d] = (k < 0) ? -k : 0;
-    }
-
-    for (int i = 1; i <= m; ++i) {
-        for (int k = -d; k <= d; ++k) {
-            int idx = k + d;
-            int best = prev[idx] + 1;  // Deletion
-
-            if (k > -d) best = min(best, prev[idx - 1] + 1);  // Insertion
-            if (k < d) best = min(best, prev[idx + 1]);  // Match/Mismatch
-
-            while (best < n && i + best - k < m && str1[i + best - k - 1] == str2[best]) {
-                ++best;  // Extend matches
-            }
-
-            curr[idx] = best;
-        }
-
-        if (curr[d] >= n) return true;  // If we reach the end of str2, we are within distance d
-
-        swap(prev, curr);  // Move to the next row
-    }
-
-    return false;*/
 }
 
 //examines the ladders that are one step away from the orginal word, where only one letter is changed
 bool is_adjacent(const string& word1, const string& word2)
 {
-    //return edit_distance_within(word1, word2, 1);
-    int len1 = word1.length();
+    return edit_distance_within(word1, word2, 1);
+    /*int len1 = word1.length();
     int len2 = word2.length();
 
     if (abs(len1 - len2) > 1) return false; // Length difference should be at most 1
@@ -98,14 +60,14 @@ bool is_adjacent(const string& word1, const string& word2)
         }
     }
     
-    return diff_count == 1 || (diff_count == 0 && abs(len1 - len2) == 1);
+    return diff_count == 1 || (diff_count == 0 && abs(len1 - len2) == 1);*/
 
 }
 // uses bfs
 //creates a queue of stacks
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
 {
-    if(begin_word == end_word){return{begin_word};}
+    if(begin_word == end_word){return{};}
     //if (word_list.find(begin_word) == word_list.end()){return{};}
 
     queue<vector<string>> ladders;
@@ -158,10 +120,15 @@ void load_words(set<string> & word_list, const string& file_name)
 }
 void print_word_ladder(const vector<string>& ladder)
 {
+    if (ladder.empty()){
+        cout << "No word ladder found." << endl;
+        return;
+    }
     cout << "Word ladder found: ";
     for (size_t i = 0; i < ladder.size(); ++i){
         cout << ladder[i] << " ";
     }
+    cout << endl;
 }
 void verify_word_ladder()
 {
