@@ -6,6 +6,7 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 using namespace std;
 
 
@@ -40,8 +41,8 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
 //examines the ladders that are one step away from the orginal word, where only one letter is changed
 bool is_adjacent(const string& word1, const string& word2)
 {
-    return edit_distance_within(word1, word2, 1);
-    /*int len1 = word1.length();
+    //return edit_distance_within(word1, word2, 1);
+    int len1 = word1.length();
     int len2 = word2.length();
 
     if (abs(len1 - len2) > 1) return false; // Length difference should be at most 1
@@ -60,7 +61,7 @@ bool is_adjacent(const string& word1, const string& word2)
         }
     }
     
-    return diff_count == 1 || (diff_count == 0 && abs(len1 - len2) == 1);*/
+    return diff_count == 1 || (diff_count == 0 && abs(len1 - len2) == 1);
 
 }
 // uses bfs
