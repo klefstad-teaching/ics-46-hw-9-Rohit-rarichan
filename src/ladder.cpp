@@ -50,27 +50,26 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
     return dp[l1][l2] <= d;*/
 }
 
-
-bool is_adjacent(const string& word1, const string& word2) {
+//examines the ladders that are one step away from the orginal word, where only one letter is changed
+bool is_adjacent(const string& word1, const string& word2)
+{
+    if (word1 == word2){return true;}
     int l1 = word1.length(), l2 = word2.length();
     
-    if (abs(l1 - l2) > 1) return false;  
+    if (abs(l1 - l2) > 1) return false; 
 
-    const char* w1 = word1.c_str();
-    const char* w2 = word2.c_str();
-    int diff_count = 0;
+    int i = 0, j = 0, diff_count = 0;
 
-    while (*w1 && *w2) { 
-        if (*w1 != *w2) {
+    while (i < l1 && j < l2) {
+        if (word1[i] != word2[j]) {
             if (++diff_count > 1) return false;  
 
-
-            if (l1 > l2) ++w1;
-            else if (l1 < l2) ++w2;
-            else { ++w1; ++w2; }
+            if (l1 > l2) ++i;
+            else if (l1 < l2) ++j;
+            else { ++i; ++j; }
         } else {
-            ++w1;
-            ++w2;
+            ++i;
+            ++j;
         }
     }
     return diff_count == 1 || (diff_count == 0 && abs(l1 - l2) == 1);
@@ -100,15 +99,18 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
 
             if(last_word == end_word){return ladder;}
 
-            for (const string & word : word_list){
-                if (visited.find(word) == visited.end() && is_adjacent(last_word, word)){
+            for (auto it = dict.begin(); it != dict.end();) {
+                if (visited.find(*it) == visited.end() && is_adjacent(last_word, *it)) {
                     vector<string> new_ladder = ladder;
-                    new_ladder.push_back(word);
+                    new_ladder.push_back(*it);
 
-                    if (word == end_word){return new_ladder;}
+                    if (*it == end_word) return new_ladder;
 
                     ladders.push(new_ladder);
-                    level_visited.insert(word);
+                    level_visited.insert(*it);
+                    it = dict.erase(it);  
+                } else {
+                    ++it;
                 }
             }
         }
