@@ -1,4 +1,3 @@
-
 #include "ladder.h"
 #include <string>
 #include <vector>
@@ -19,6 +18,12 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
     int l1 = str1.length(), l2 = str2.length();
     if (abs(l1 - l2) > d){return false;}
 
+    /*if (l1 == l2){
+        int diff_count = 0; 
+        for (int i = 0; i < l1; ++i){
+            if (str1[i] != str2[i] )
+        }
+    }*/
     int i = 0; 
     int j = 0; 
     int count = 0;
@@ -43,26 +48,6 @@ bool is_adjacent(const string& word1, const string& word2)
 {
     if (word1 == word2){return true;}
     return edit_distance_within(word1, word2, 1);
-    /*int len1 = word1.length();
-    int len2 = word2.length();
-
-    if (abs(len1 - len2) > 1) return false; // Length difference should be at most 1
-
-    int diff_count = 0, i = 0, j = 0;
-
-    while (i < len1 && j < len2) {
-        if (word1[i] != word2[j]) {
-            if (++diff_count > 1) return false;
-            if (len1 > len2) ++i;  // Deletion case
-            else if (len1 < len2) ++j; // Insertion case
-            else { ++i; ++j; }  // Replacement case
-        } else {
-            ++i;
-            ++j;
-        }
-    }
-    
-    return diff_count == 1 || (diff_count == 0 && abs(len1 - len2) == 1);*/
 
 }
 // uses bfs
@@ -72,6 +57,7 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
     if(begin_word == end_word){return{};}
     //if (word_list.find(begin_word) == word_list.end()){return{};}
 
+    unordered_set<string> dict(word_list.begin(), word_list.end());
     queue<vector<string>> ladders;
     unordered_set<string> visited;
 
@@ -141,78 +127,3 @@ void verify_word_ladder()
     vector<string> ladder = generate_word_ladder(start, end, word_list);
     print_word_ladder(ladder);
 }
-
-
-/*vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
-{
-    vector<string> words(word_list.begin(), word_list.end());
-    int n = words.size();
-    int start = -1;
-    int end = -1;
-
-    for (int i = 0; i < n; ++i){
-        if (words[i] == begin_word){start = i;}
-        if (words[i] == end_word){end = i;}
-    }
-
-    if (end == -1){return {};}
-    if (start == -1){
-        words.insert(words.begin(), begin_word);
-        start = 0; 
-        ++end;
-        ++n;
-    }
-    vector<vector<int>> adj(n);
-    for (int i = 0; i < n - 1; ++i){
-        for (int j = i + 1; j < n; j++){
-            if(is_adjacent(words[i], words[j])){
-                adj[i].push_back(j);
-                adj[i].push_back(i);
-            }
-        }
-    }
-
-    vector<vector<int>> parent(n);
-    queue<int> q;
-    vector<int> dist(n, 1005);
-    q.push(start);
-    parent[start].push_back(-1);
-    dist[start] = 0;
-
-    while (!q.empty()){
-        int x = q.front();
-        q.pop();
-        for (int u : adj[x]){
-            if (dist[u] > dist[x] + 1){
-                dist[u] =  dist[x] + 1;
-                q.push(u);
-                parent[u].clear();
-                parent[u].push_back(x);
-            }else if (dist[u] == dist[x] + 1){
-                parent[u].push_back(x);
-            }
-        }
-    }
-    vector<vector<int>> paths;
-    vector<int> path;
-    function<void(int)> shortestPaths = [&](int node){
-        if (node == -1){
-            paths.push_back(path);
-            return;
-        }
-        for (int u : parent[node]){
-            path.push_back(u);
-            shortestPaths(u);
-            path.pop_back();
-        }
-    };
-
-    shortestPaths(end);
-    if (paths.empty()){return {};}
-
-    vector<string> shortest_ladder;
-    for(int i = paths[0].size() - 1; i >= 0; --i){
-        shortest_ladder.push_back(words[paths[0][i]]);
-    }
-    return shortest_ladder;
-}*/

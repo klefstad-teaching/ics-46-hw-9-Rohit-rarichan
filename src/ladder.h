@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <unordered_set>
 
 #ifndef LADDER_H
 #define LADDER_H
@@ -19,5 +20,5 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
 void load_words(set<string> & word_list, const string& file_name);
 void print_word_ladder(const vector<string>& ladder);
 void verify_word_ladder();
-
+vector<string> generate_neighbors(const string& word, const unordered_set<string>& word_list);
 #endif
