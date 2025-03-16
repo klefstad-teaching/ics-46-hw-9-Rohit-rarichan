@@ -45,6 +45,8 @@ bool is_adjacent(const string& word1, const string& word2)
     int len1 = word1.length();
     int len2 = word2.length();
 
+    if (len1 == len2){return true;}
+
     if (abs(len1 - len2) > 1) return false; // Length difference should be at most 1
 
     int diff_count = 0, i = 0, j = 0;
