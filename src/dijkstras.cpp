@@ -13,6 +13,9 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
     vector<int> distances(n , INF);
     previous.assign(n, -1);
 
+    if (source < 0 || source >= n){return {};}
+    if (G.empty() || G[source].empty()){return {};}
+
     priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int, int>>> pq;
     distances[source] = 0;
     pq.push({0, source});
@@ -23,6 +26,8 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
         pq.pop();
 
         if (current_distance > distances[u]) {continue;}
+
+        if(G[u].empty()){continue;}
 
         for (const Edge &e : G[u]){
             int v = e.dst;
