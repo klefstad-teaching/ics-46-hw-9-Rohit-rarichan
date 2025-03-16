@@ -53,9 +53,26 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
 //examines the ladders that are one step away from the orginal word, where only one letter is changed
 bool is_adjacent(const string& word1, const string& word2)
 {
-    //if (word1 == word2){return true;}
-    return edit_distance_within(word1, word2, 1);
+    //return edit_distance_within(word1, word2, 1);
+    int l1 = word1.length(), l2 = word2.length();
+    
+    if (abs(l1 - l2) > 1) return false; 
 
+    int i = 0, j = 0, diff_count = 0;
+
+    while (i < l1 && j < l2) {
+        if (word1[i] != word2[j]) {
+            if (++diff_count > 1) return false;  
+
+            if (l1 > l2) ++i;
+            else if (l1 < l2) ++j;
+            else { ++i; ++j; }
+        } else {
+            ++i;
+            ++j;
+        }
+    }
+    return diff_count == 1 || (diff_count == 0 && abs(l1 - l2) == 1);
 }
 // uses bfs
 //creates a queue of stacks
