@@ -7,44 +7,37 @@
 #include <stack>
 using namespace std;
 
-struct Node {
-    int vertex, weight;
-    bool operator>(const Node& other) const {
-        return weight > other.weight;
-    }
-};
 vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& previous)
 {
     int n = G.numVertices;
-    vector<int> distances(n, INF);
-    vector<bool> visited(n , false);
-    priority_queue<Node, vector<Node>, greater<Node>> pq;
+    vector<int> distances(n , INF);
+    previous.assign(n, -1);
 
     if (source < 0 || source >= n){return {};}
-    if (G.empty()){return {};}
+    if (G.empty() || G[source].empty()){return {};}
 
+    priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int, int>>> pq;
     distances[source] = 0;
-    pq.push({source , 0});
+    pq.push({0, source});
 
     while (!pq.empty()){
-        Node current = pq.top();
+        int current_distance = pq.top().first;
+        int u = pq.top().second;
         pq.pop();
-        int u = current.vertex;
-        if(visited[u]){continue;}
-        visited[u] = true;
-        //if (current_distance > distances[u]) {continue;}
 
-        //if(G[u].empty()){continue;}
+        if (current_distance > distances[u]) {continue;}
+
+        if(G[u].empty()){continue;}
 
         for (const Edge &e : G[u]){
             int v = e.dst;
             int weight = e.weight;
             int new_distance = distances[u] + weight;
 
-            if (new_distance < distances[v] && !visited[v]){
+            if (new_distance < distances[v]){
                 distances[v] = new_distance;
                 previous[v] = u;
-                pq.push({v,distances[v]});
+                pq.push({new_distance, v});
             }
         }
     }
